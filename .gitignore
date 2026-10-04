@@ -1,0 +1,46 @@
+# Environment & Secrets (NEVER COMMIT)
+.env
+.env.*
+!.env.example
+client_secrets.json
+*client_secrets*.json
+!client_secrets.json.example
+token.json
+data/token.json
+credentials.json
+*.key
+*.pem
+
+# Python & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+ENV/
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# SQLite databases & WAL logs
+*.db
+*.db-shm
+*.db-wal
+data/*.db
+data/*.db-shm
+data/*.db-wal
+!data/.gitkeep
+backups/
+
+# Logs & Temporary Caches
+*.log
+smb_cache_*/
+.cache/
+
+# OS & IDE Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YT Manager - Glass Dashboard</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Glass Design System -->
+    <link rel="stylesheet" href="css/glass.css">
+    <link rel="stylesheet" href="css/yt.css">
+</head>
+<body>
+
+<div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="app-sidebar">
+        <div class="brand">
+            <div class="brand-icon">
+                <i class="fab fa-youtube"></i>
+            </div>
+            <div>
+                <div class="brand-title">YT Manager</div>
+                <div style="font-size: 0.75rem; color: var(--accent-amber); font-weight: 500;">Standalone Edition</div>
+            </div>
+        </div>
+
+        <ul class="nav-menu">
+            <li>
+                <a href="#dashboard" class="nav-link active">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#history" class="nav-link">
+                    <i class="fas fa-history"></i>
+                    <span>Upload History</span>
+                </a>
+            </li>
+            <li>
+                <a href="#settings" class="nav-link" onclick="openModal('settingsModal')">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Watcher Settings</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem;">Status</span>
+                <span id="healthBadge" class="glass-badge badge-coral">● Connecting...</span>
+            </div>
+            <button class="glass-btn" style="width: 100%; font-size: 0.75rem; justify-content: center;" onclick="triggerBackup()">
+                <i class="fas fa-database"></i> Backup SQLite
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="app-main">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div>
+                <h1 class="page-title">YouTube Video Automation</h1>
+                <p class="page-subtitle">Continuous background video publishing from local & SMB shares</p>
+            </div>
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+                <button class="glass-btn" onclick="openModal('settingsModal')">
+                    <i class="fas fa-folder-cog"></i> Folder & Intervals
+                </button>
+                <button class="glass-btn glass-btn-primary" onclick="triggerRetry()">
+                    <i class="fas fa-play"></i> Retry / Push Now
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Row -->
+        <section class="stats-grid">
+            <div class="glass-card glass-stat-card">
+                <div class="stat-label">
+                    <span>Total Logs</span>
+                    <i class="fas fa-video" style="color: var(--accent-amber);"></i>
+                </div>
+                <div class="stat-value" id="statTotalUploads">0</div>
+                <div class="stat-meta">Processed Records</div>
+            </div>
+
+            <div class="glass-card glass-stat-card">
+                <div class="stat-label">
+                    <span>Successful</span>
+                    <i class="fas fa-check-circle" style="color: var(--accent-emerald);"></i>
+                </div>
+                <div class="stat-value" id="statSuccess">0</div>
+                <div class="stat-meta" style="color: var(--accent-emerald);">Uploaded to YouTube</div>
+            </div>
+
+            <div class="glass-card glass-stat-card">
+                <div class="stat-label">
+                    <span>Failed</span>
+                    <i class="fas fa-exclamation-triangle" style="color: var(--accent-coral);"></i>
+                </div>
+                <div class="stat-value" id="statFailed">0</div>
+                <div class="stat-meta" style="color: var(--accent-coral);">Needs Retry</div>
+            </div>
+
+            <div class="glass-card glass-stat-card">
+                <div class="stat-label">
+                    <span>Worker State</span>
+                    <i class="fas fa-microchip" style="color: var(--accent-violet);"></i>
+                </div>
+                <div class="stat-value" id="statWorkerStatus" style="font-size: 1.15rem; word-break: break-all; margin-top: 0.85rem;">Idle</div>
+                <div class="stat-meta">Continuous Supervisor</div>
+            </div>
+        </section>
+
+        <!-- Active Watcher Directory Strip -->
+        <div class="folder-box">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <i class="fas fa-network-wired" style="color: var(--accent-coral); font-size: 1.25rem;"></i>
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Active Watcher Folder</div>
+                    <div id="activeFolderDisplay" style="font-weight: 600; font-family: monospace; font-size: 0.95rem;">.</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span id="pendingFilesCount" class="glass-badge badge-amber">0 detected</span>
+                <button class="glass-btn" style="padding: 0.4rem 0.8rem;" onclick="loadPendingFiles()">
+                    <i class="fas fa-sync-alt"></i> Rescan
+                </button>
+            </div>
+        </div>
+
+        <!-- Upload History Table -->
+        <section class="glass-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                    <input type="text" id="searchInput" class="glass-input" placeholder="Search filename..." style="width: 250px;">
+                    <select id="statusFilter" class="glass-select" style="width: 150px;">
+                        <option value="">All Statuses</option>
+                        <option value="Success">Success</option>
+                        <option value="Failed">Failed</option>
+                    </select>
+                </div>
+                <button class="glass-btn" onclick="loadUploads()">
+                    <i class="fas fa-redo"></i> Refresh Logs
+                </button>
+            </div>
+
+            <div class="glass-table-container">
+                <table class="glass-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Filename</th>
+                            <th>YouTube Link</th>
+                            <th>Status</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="uploadsTableBody">
+                        <!-- Injected via app.js -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="paginationControls" style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem;">
+                <!-- Pagination injected via app.js -->
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="glass-modal-overlay">
+    <div class="glass-modal">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.25rem; font-weight: 700;">Watcher & Upload Settings</h2>
+            <button class="glass-btn" style="padding: 0.3rem 0.6rem; border-radius: var(--radius-full);" onclick="closeModal('settingsModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form id="settingsForm">
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Video Folder Path (Local or UNC)</label>
+                <input type="text" id="settingFolder" class="glass-input" placeholder="e.g. C:\Videos or \\192.168.1.22\Share" required>
+            </div>
+
+            <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <input type="checkbox" id="settingIsSmb" onchange="toggleSmbFields()">
+                <label for="settingIsSmb" style="font-size: 0.85rem; cursor: pointer;">Enable SMB Remote Network Share</label>
+            </div>
+
+            <div id="smbFieldsBox" style="display: none; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div>
+                    <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">SMB Share Name</label>
+                    <input type="text" id="settingSmbShare" class="glass-input" placeholder="ShareDrive">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Username</label>
+                    <input type="text" id="settingSmbUser" class="glass-input" placeholder="Username">
+                </div>
+                <div style="grid-column: span 2;">
+                    <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Password (leave empty to keep unchanged)</label>
+                    <input type="password" id="settingSmbPass" class="glass-input" placeholder="••••••••">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div>
+                    <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Upload Interval (Minutes)</label>
+                    <input type="number" id="settingInterval" class="glass-input" value="45" min="1" required>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Retry Interval (Hours)</label>
+                    <input type="number" id="settingRetry" class="glass-input" value="24" min="1" required>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <input type="checkbox" id="settingEnabled" checked>
+                <label for="settingEnabled" style="font-size: 0.85rem; cursor: pointer;">Enable Continuous Background Uploading</label>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button type="button" class="glass-btn" onclick="closeModal('settingsModal')">Cancel</button>
+                <button type="submit" class="glass-btn glass-btn-primary">Save Settings</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
