@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>YT Manager - Glass Dashboard</title>
     <!-- Google Fonts & FontAwesome -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +16,26 @@
 <body>
 
 <div class="app-layout">
-    <!-- Sidebar -->
+    <!-- Mobile Top Header Bar (< 768px) -->
+    <header class="mobile-top-bar">
+        <div class="mobile-brand">
+            <div class="brand-icon">
+                <i class="fab fa-youtube"></i>
+            </div>
+            <div>
+                <div class="brand-title">YT Manager</div>
+                <div class="mobile-brand-subtitle">Automation</div>
+            </div>
+        </div>
+        <div class="mobile-top-actions">
+            <span id="mobileHealthBadge" class="glass-badge badge-coral">● Connecting...</span>
+            <button class="glass-btn mobile-icon-btn" onclick="triggerBackup()" title="Backup Database">
+                <i class="fas fa-database"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Desktop Sidebar (>= 768px) -->
     <aside class="app-sidebar">
         <div class="brand">
             <div class="brand-icon">
@@ -30,13 +49,13 @@
 
         <ul class="nav-menu">
             <li>
-                <a href="#dashboard" class="nav-link active">
+                <a href="#dashboard" class="nav-link active" onclick="switchView('dashboard')">
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li>
-                <a href="#history" class="nav-link">
+                <a href="#history" class="nav-link" onclick="switchView('history')">
                     <i class="fas fa-history"></i>
                     <span>Upload History</span>
                 </a>
@@ -64,171 +83,201 @@
     <main class="app-main">
         <!-- Top Bar -->
         <header class="top-bar">
-            <div>
+            <div class="top-bar-title">
                 <h1 class="page-title">YouTube Video Automation</h1>
                 <p class="page-subtitle">Continuous background video publishing from local & SMB shares</p>
             </div>
-            <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <div class="top-bar-actions">
                 <button class="glass-btn" onclick="openModal('settingsModal')">
-                    <i class="fas fa-folder-cog"></i> Folder & Intervals
+                    <i class="fas fa-folder-cog"></i> <span>Folder & Intervals</span>
                 </button>
                 <button class="glass-btn glass-btn-primary" onclick="triggerRetry()">
-                    <i class="fas fa-play"></i> Retry / Push Now
+                    <i class="fas fa-play"></i> <span>Retry / Push Now</span>
                 </button>
             </div>
         </header>
 
-        <!-- Stats Row -->
-        <section class="stats-grid">
-            <div class="glass-card glass-stat-card">
-                <div class="stat-label">
-                    <span>Total Logs</span>
-                    <i class="fas fa-video" style="color: var(--accent-amber);"></i>
+        <!-- Dashboard Section: Stats & Active Watcher -->
+        <div id="dashboardSection" class="content-section">
+            <!-- Stats Row -->
+            <section class="stats-grid">
+                <div class="glass-card glass-stat-card">
+                    <div class="stat-label">
+                        <span>Total Logs</span>
+                        <i class="fas fa-video" style="color: var(--accent-amber);"></i>
+                    </div>
+                    <div class="stat-value" id="statTotalUploads">0</div>
+                    <div class="stat-meta">Processed Records</div>
                 </div>
-                <div class="stat-value" id="statTotalUploads">0</div>
-                <div class="stat-meta">Processed Records</div>
-            </div>
 
-            <div class="glass-card glass-stat-card">
-                <div class="stat-label">
-                    <span>Successful</span>
-                    <i class="fas fa-check-circle" style="color: var(--accent-emerald);"></i>
+                <div class="glass-card glass-stat-card">
+                    <div class="stat-label">
+                        <span>Successful</span>
+                        <i class="fas fa-check-circle" style="color: var(--accent-emerald);"></i>
+                    </div>
+                    <div class="stat-value" id="statSuccess">0</div>
+                    <div class="stat-meta" style="color: var(--accent-emerald);">Uploaded to YouTube</div>
                 </div>
-                <div class="stat-value" id="statSuccess">0</div>
-                <div class="stat-meta" style="color: var(--accent-emerald);">Uploaded to YouTube</div>
-            </div>
 
-            <div class="glass-card glass-stat-card">
-                <div class="stat-label">
-                    <span>Failed</span>
-                    <i class="fas fa-exclamation-triangle" style="color: var(--accent-coral);"></i>
+                <div class="glass-card glass-stat-card">
+                    <div class="stat-label">
+                        <span>Failed</span>
+                        <i class="fas fa-exclamation-triangle" style="color: var(--accent-coral);"></i>
+                    </div>
+                    <div class="stat-value" id="statFailed">0</div>
+                    <div class="stat-meta" style="color: var(--accent-coral);">Needs Retry</div>
                 </div>
-                <div class="stat-value" id="statFailed">0</div>
-                <div class="stat-meta" style="color: var(--accent-coral);">Needs Retry</div>
-            </div>
 
-            <div class="glass-card glass-stat-card">
-                <div class="stat-label">
-                    <span>Worker State</span>
-                    <i class="fas fa-microchip" style="color: var(--accent-violet);"></i>
+                <div class="glass-card glass-stat-card">
+                    <div class="stat-label">
+                        <span>Worker State</span>
+                        <i class="fas fa-microchip" style="color: var(--accent-violet);"></i>
+                    </div>
+                    <div class="stat-value" id="statWorkerStatus" style="font-size: 1.15rem; word-break: break-all; margin-top: 0.85rem;">Idle</div>
+                    <div class="stat-meta">Continuous Supervisor</div>
                 </div>
-                <div class="stat-value" id="statWorkerStatus" style="font-size: 1.15rem; word-break: break-all; margin-top: 0.85rem;">Idle</div>
-                <div class="stat-meta">Continuous Supervisor</div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Active Watcher Directory Strip -->
-        <div class="folder-box">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-                <i class="fas fa-network-wired" style="color: var(--accent-coral); font-size: 1.25rem;"></i>
-                <div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Active Watcher Folder</div>
-                    <div id="activeFolderDisplay" style="font-weight: 600; font-family: monospace; font-size: 0.95rem;">.</div>
+            <!-- Active Watcher Directory Strip -->
+            <div class="folder-box">
+                <div class="folder-info">
+                    <i class="fas fa-network-wired folder-icon"></i>
+                    <div class="folder-text">
+                        <div class="folder-label">Active Watcher Folder</div>
+                        <div id="activeFolderDisplay" class="folder-path">.</div>
+                    </div>
                 </div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-                <span id="pendingFilesCount" class="glass-badge badge-amber">0 detected</span>
-                <button class="glass-btn" style="padding: 0.4rem 0.8rem;" onclick="loadPendingFiles()">
-                    <i class="fas fa-sync-alt"></i> Rescan
-                </button>
+                <div class="folder-actions">
+                    <span id="pendingFilesCount" class="glass-badge badge-amber">0 detected</span>
+                    <button class="glass-btn rescan-btn" onclick="loadPendingFiles()">
+                        <i class="fas fa-sync-alt"></i> <span>Rescan</span>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- Upload History Table -->
-        <section class="glass-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
-                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                    <input type="text" id="searchInput" class="glass-input" placeholder="Search filename..." style="width: 250px;">
-                    <select id="statusFilter" class="glass-select" style="width: 150px;">
-                        <option value="">All Statuses</option>
-                        <option value="Success">Success</option>
-                        <option value="Failed">Failed</option>
-                    </select>
+        <!-- History Section: Upload History Table -->
+        <div id="historySection" class="content-section">
+            <section class="glass-card table-section-card">
+                <div class="table-toolbar">
+                    <div class="table-filters">
+                        <input type="text" id="searchInput" class="glass-input filter-search" placeholder="Search filename...">
+                        <select id="statusFilter" class="glass-select filter-select">
+                            <option value="">All Statuses</option>
+                            <option value="Success">Success</option>
+                            <option value="Failed">Failed</option>
+                        </select>
+                    </div>
+                    <button class="glass-btn filter-refresh-btn" onclick="loadUploads()">
+                        <i class="fas fa-redo"></i> <span>Refresh Logs</span>
+                    </button>
                 </div>
-                <button class="glass-btn" onclick="loadUploads()">
-                    <i class="fas fa-redo"></i> Refresh Logs
-                </button>
-            </div>
 
-            <div class="glass-table-container">
-                <table class="glass-table">
-                    <thead>
-                        <tr>
-                            <th>Timestamp</th>
-                            <th>Filename</th>
-                            <th>YouTube Link</th>
-                            <th>Status</th>
-                            <th>Details</th>
-                        </tr>
-                    </thead>
-                    <tbody id="uploadsTableBody">
-                        <!-- Injected via app.js -->
-                    </tbody>
-                </table>
-            </div>
+                <div class="glass-table-container">
+                    <table class="glass-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Filename</th>
+                                <th>YouTube Link</th>
+                                <th>Status</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="uploadsTableBody">
+                            <!-- Injected via app.js -->
+                        </tbody>
+                    </table>
+                </div>
 
-            <div id="paginationControls" style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem;">
-                <!-- Pagination injected via app.js -->
-            </div>
-        </section>
+                <div id="paginationControls" class="pagination-container">
+                    <!-- Pagination injected via app.js -->
+                </div>
+            </section>
+        </div>
     </main>
+
+    <!-- Mobile Bottom Navigation Bar (< 768px) -->
+    <nav class="mobile-bottom-nav">
+        <a href="#dashboard" class="mobile-nav-item active" onclick="switchView('dashboard')">
+            <i class="fas fa-th-large"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="#history" class="mobile-nav-item" onclick="switchView('history')">
+            <i class="fas fa-history"></i>
+            <span>History</span>
+        </a>
+        <div class="mobile-fab-container">
+            <button class="mobile-nav-fab" onclick="triggerRetry()" title="Retry / Push Now">
+                <i class="fas fa-play"></i>
+            </button>
+        </div>
+        <a href="#settings" class="mobile-nav-item" onclick="openModal('settingsModal')">
+            <i class="fas fa-sliders-h"></i>
+            <span>Settings</span>
+        </a>
+        <a href="javascript:void(0)" class="mobile-nav-item" onclick="refreshAllData()">
+            <i class="fas fa-sync-alt"></i>
+            <span>Refresh</span>
+        </a>
+    </nav>
 </div>
 
 <!-- Settings Modal -->
-<div id="settingsModal" class="glass-modal-overlay">
+<div id="settingsModal" class="glass-modal-overlay" onclick="handleOverlayClick(event, 'settingsModal')">
     <div class="glass-modal">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-            <h2 style="font-size: 1.25rem; font-weight: 700;">Watcher & Upload Settings</h2>
-            <button class="glass-btn" style="padding: 0.3rem 0.6rem; border-radius: var(--radius-full);" onclick="closeModal('settingsModal')">
+        <div class="modal-header">
+            <h2 class="modal-title">Watcher & Upload Settings</h2>
+            <button class="glass-btn modal-close-btn" onclick="closeModal('settingsModal')" aria-label="Close">
                 <i class="fas fa-times"></i>
             </button>
         </div>
 
         <form id="settingsForm">
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Video Folder Path (Local or UNC)</label>
+            <div class="form-group">
+                <label class="form-label">Video Folder Path (Local or UNC)</label>
                 <input type="text" id="settingFolder" class="glass-input" placeholder="e.g. C:\Videos or \\192.168.1.22\Share" required>
             </div>
 
-            <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <div class="form-checkbox-row">
                 <input type="checkbox" id="settingIsSmb" onchange="toggleSmbFields()">
-                <label for="settingIsSmb" style="font-size: 0.85rem; cursor: pointer;">Enable SMB Remote Network Share</label>
+                <label for="settingIsSmb" class="checkbox-label">Enable SMB Remote Network Share</label>
             </div>
 
-            <div id="smbFieldsBox" style="display: none; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                <div>
-                    <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">SMB Share Name</label>
+            <div id="smbFieldsBox" class="smb-fields-box">
+                <div class="form-group">
+                    <label class="form-label">SMB Share Name</label>
                     <input type="text" id="settingSmbShare" class="glass-input" placeholder="ShareDrive">
                 </div>
-                <div>
-                    <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Username</label>
+                <div class="form-group">
+                    <label class="form-label">Username</label>
                     <input type="text" id="settingSmbUser" class="glass-input" placeholder="Username">
                 </div>
-                <div style="grid-column: span 2;">
-                    <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Password (leave empty to keep unchanged)</label>
+                <div class="form-group smb-full-col">
+                    <label class="form-label">Password (leave empty to keep unchanged)</label>
                     <input type="password" id="settingSmbPass" class="glass-input" placeholder="••••••••">
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                <div>
-                    <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Upload Interval (Minutes)</label>
+            <div class="intervals-grid">
+                <div class="form-group">
+                    <label class="form-label">Upload Interval (Mins)</label>
                     <input type="number" id="settingInterval" class="glass-input" value="45" min="1" required>
                 </div>
-                <div>
-                    <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Retry Interval (Hours)</label>
+                <div class="form-group">
+                    <label class="form-label">Retry Interval (Hours)</label>
                     <input type="number" id="settingRetry" class="glass-input" value="24" min="1" required>
                 </div>
             </div>
 
-            <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <div class="form-checkbox-row">
                 <input type="checkbox" id="settingEnabled" checked>
-                <label for="settingEnabled" style="font-size: 0.85rem; cursor: pointer;">Enable Continuous Background Uploading</label>
+                <label for="settingEnabled" class="checkbox-label">Enable Continuous Background Uploading</label>
             </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
-                <button type="button" class="glass-btn" onclick="closeModal('settingsModal')">Cancel</button>
-                <button type="submit" class="glass-btn glass-btn-primary">Save Settings</button>
+            <div class="modal-actions">
+                <button type="button" class="glass-btn modal-cancel-btn" onclick="closeModal('settingsModal')">Cancel</button>
+                <button type="submit" class="glass-btn glass-btn-primary modal-save-btn">Save Settings</button>
             </div>
         </form>
     </div>

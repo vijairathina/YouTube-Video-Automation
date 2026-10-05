@@ -1,16 +1,21 @@
 /* ==========================================================================
-   YT MANAGER SPECIFIC STYLING
+   YT MANAGER SPECIFIC STYLING & DESIGN SYSTEM
    ========================================================================== */
 
 .app-layout {
     display: flex;
     min-height: 100vh;
+    width: 100%;
 }
 
+/* --------------------------------------------------------------------------
+   Desktop Sidebar
+   -------------------------------------------------------------------------- */
 .app-sidebar {
     width: 260px;
     background: rgba(10, 15, 29, 0.85);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-right: 1px solid var(--border-glass);
     padding: 1.5rem 1rem;
     display: flex;
@@ -19,6 +24,7 @@
     position: sticky;
     top: 0;
     height: 100vh;
+    flex-shrink: 0;
 }
 
 .brand {
@@ -39,6 +45,7 @@
     font-size: 1.2rem;
     color: #fff;
     box-shadow: 0 0 15px rgba(255, 71, 87, 0.4);
+    flex-shrink: 0;
 }
 
 .brand-title {
@@ -67,6 +74,7 @@
     text-decoration: none;
     font-weight: 500;
     font-size: 0.9rem;
+    cursor: pointer;
     transition: all 0.2s ease;
 }
 
@@ -89,10 +97,25 @@
     color: var(--text-muted);
 }
 
+/* --------------------------------------------------------------------------
+   Mobile Headers & Bottom Nav (Hidden on Desktop)
+   -------------------------------------------------------------------------- */
+.mobile-top-bar {
+    display: none;
+}
+
+.mobile-bottom-nav {
+    display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Main Content Area
+   -------------------------------------------------------------------------- */
 .app-main {
     flex: 1;
     padding: 2rem 2.5rem;
     overflow-y: auto;
+    min-width: 0;
 }
 
 .top-bar {
@@ -100,6 +123,12 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+    gap: 1.5rem;
+}
+
+.top-bar-title {
+    flex: 1;
+    min-width: 0;
 }
 
 .page-title {
@@ -114,6 +143,16 @@
     margin-top: 0.25rem;
 }
 
+.top-bar-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Stats Grid
+   -------------------------------------------------------------------------- */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -149,6 +188,9 @@
     border: 1px solid rgba(255, 165, 2, 0.3);
 }
 
+/* --------------------------------------------------------------------------
+   Active Watcher Folder Box
+   -------------------------------------------------------------------------- */
 .folder-box {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border-glass);
@@ -160,4 +202,541 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 1rem;
+}
+
+.folder-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+    flex: 1;
+}
+
+.folder-icon {
+    color: var(--accent-coral);
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.folder-text {
+    min-width: 0;
+}
+
+.folder-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.folder-path {
+    font-weight: 600;
+    font-family: monospace;
+    font-size: 0.95rem;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    color: var(--text-primary);
+}
+
+.folder-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+}
+
+.rescan-btn {
+    padding: 0.4rem 0.85rem;
+    font-size: 0.85rem;
+}
+
+/* --------------------------------------------------------------------------
+   Table & History Section
+   -------------------------------------------------------------------------- */
+.table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.table-filters {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.filter-search {
+    width: 250px;
+}
+
+.filter-select {
+    width: 150px;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Modal & Form Elements
+   -------------------------------------------------------------------------- */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.modal-close-btn {
+    padding: 0.35rem 0.65rem;
+    border-radius: var(--radius-full);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.35rem;
+}
+
+.form-checkbox-row {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkbox-label {
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.smb-fields-box {
+    display: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.smb-full-col {
+    grid-column: span 2;
+}
+
+.intervals-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+/* ==========================================================================
+   TABLET RESPONSIVE SYSTEM (max-width: 1024px)
+   ========================================================================== */
+@media (max-width: 1024px) {
+    .app-sidebar {
+        width: 72px;
+        padding: 1.25rem 0.5rem;
+    }
+    .brand-title, .brand div div, .nav-link span, .sidebar-footer {
+        display: none !important;
+    }
+    .brand {
+        justify-content: center;
+        padding: 0;
+    }
+    .nav-link {
+        justify-content: center;
+        padding: 0.85rem 0;
+    }
+    .app-main {
+        padding: 1.5rem 1.75rem;
+    }
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVE SYSTEM (max-width: 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .app-layout {
+        flex-direction: column !important;
+        width: 100% !important;
+        min-height: 100vh !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Completely hide desktop sidebar on mobile */
+    .app-sidebar {
+        display: none !important;
+    }
+
+    /* Mobile Top Header Bar */
+    .mobile-top-bar {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 0.75rem 1rem !important;
+        background: rgba(10, 15, 29, 0.95) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border-bottom: 1px solid var(--border-glass) !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 900 !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .mobile-brand {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.65rem !important;
+    }
+
+    .mobile-brand .brand-icon {
+        width: 34px !important;
+        height: 34px !important;
+        font-size: 1rem !important;
+    }
+
+    .mobile-brand .brand-title {
+        font-size: 1.05rem !important;
+        font-weight: 700 !important;
+        line-height: 1.1 !important;
+    }
+
+    .mobile-brand-subtitle {
+        font-size: 0.68rem !important;
+        color: var(--accent-amber) !important;
+        font-weight: 500 !important;
+    }
+
+    .mobile-top-actions {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+    }
+
+    .mobile-icon-btn {
+        padding: 0.4rem 0.65rem !important;
+        font-size: 0.85rem !important;
+        border-radius: var(--radius-sm) !important;
+    }
+
+    /* Mobile Bottom Navigation Bar */
+    .mobile-bottom-nav {
+        display: flex !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 60px !important;
+        background: rgba(10, 15, 29, 0.96) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border-top: 1px solid var(--border-glass-bright) !important;
+        z-index: 990 !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        padding: 0 0.25rem !important;
+        box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .mobile-nav-item {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 2px !important;
+        flex: 1 !important;
+        height: 100% !important;
+        color: var(--text-muted) !important;
+        text-decoration: none !important;
+        font-size: 0.68rem !important;
+        font-weight: 500 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .mobile-nav-item i {
+        font-size: 1.15rem !important;
+        transition: transform 0.2s ease, color 0.2s ease !important;
+    }
+
+    .mobile-nav-item.active {
+        color: var(--accent-coral) !important;
+        font-weight: 600 !important;
+    }
+
+    .mobile-nav-item.active i {
+        transform: translateY(-2px) !important;
+        color: var(--accent-coral) !important;
+    }
+
+    /* Floating Center Action Button (Push / Retry Now) */
+    .mobile-fab-container {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 52px !important;
+        position: relative !important;
+    }
+
+    .mobile-nav-fab {
+        width: 46px !important;
+        height: 46px !important;
+        border-radius: 50% !important;
+        background: linear-gradient(135deg, var(--accent-coral), var(--accent-amber)) !important;
+        border: 2px solid rgba(255, 255, 255, 0.25) !important;
+        color: #FFFFFF !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.15rem !important;
+        box-shadow: 0 4px 15px rgba(255, 71, 87, 0.5) !important;
+        cursor: pointer !important;
+        transform: translateY(-12px) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }
+
+    .mobile-nav-fab:active {
+        transform: translateY(-9px) scale(0.95) !important;
+        box-shadow: 0 2px 10px rgba(255, 71, 87, 0.6) !important;
+    }
+
+    /* Main Content Spacing on Mobile */
+    .app-main {
+        padding: 1rem 0.85rem calc(60px + 1.25rem) 0.85rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Top Bar on Mobile */
+    .top-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0.75rem !important;
+        margin-bottom: 1.25rem !important;
+    }
+
+    .page-title {
+        font-size: 1.35rem !important;
+        letter-spacing: -0.02em !important;
+        line-height: 1.2 !important;
+    }
+
+    .page-subtitle {
+        font-size: 0.8rem !important;
+        line-height: 1.3 !important;
+    }
+
+    .top-bar-actions {
+        display: flex !important;
+        width: 100% !important;
+        gap: 0.5rem !important;
+    }
+
+    .top-bar-actions .glass-btn {
+        flex: 1 !important;
+        justify-content: center !important;
+        font-size: 0.8rem !important;
+        padding: 0.65rem 0.5rem !important;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.65rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .glass-card {
+        padding: 0.9rem !important;
+        border-radius: var(--radius-sm) !important;
+    }
+
+    .glass-stat-card .stat-label {
+        font-size: 0.72rem !important;
+    }
+
+    .glass-stat-card .stat-value {
+        font-size: 1.45rem !important;
+        margin: 0.35rem 0 0.2rem 0 !important;
+    }
+
+    .glass-stat-card .stat-meta {
+        font-size: 0.72rem !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    /* Active Watcher Box */
+    .folder-box {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0.75rem !important;
+        padding: 0.9rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .folder-info {
+        gap: 0.65rem !important;
+    }
+
+    .folder-path {
+        font-size: 0.82rem !important;
+    }
+
+    .folder-actions {
+        justify-content: space-between !important;
+        width: 100% !important;
+    }
+
+    /* Table Toolbar */
+    .table-toolbar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0.65rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .table-filters {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .filter-search, .filter-select {
+        width: 100% !important;
+        font-size: 16px !important; /* Prevents auto-zoom on iOS Safari */
+    }
+
+    .filter-refresh-btn {
+        width: 100% !important;
+        justify-content: center !important;
+        font-size: 0.85rem !important;
+    }
+
+    /* Table Container with smooth horizontal swipe */
+    .glass-table-container {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        border-radius: var(--radius-sm) !important;
+    }
+
+    .glass-table {
+        min-width: 540px !important;
+    }
+
+    .glass-table th, .glass-table td {
+        padding: 0.65rem 0.75rem !important;
+        font-size: 0.78rem !important;
+    }
+
+    /* Pagination */
+    .pagination-container {
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    .pagination-container div {
+        width: 100% !important;
+        display: flex !important;
+        gap: 0.5rem !important;
+    }
+
+    .pagination-container button {
+        flex: 1 !important;
+        justify-content: center !important;
+    }
+
+    /* Mobile Modals */
+    .glass-modal {
+        width: 95% !important;
+        max-width: 95% !important;
+        padding: 1.25rem 1rem !important;
+        border-radius: var(--radius-md) !important;
+        max-height: 88vh !important;
+    }
+
+    .smb-fields-box {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+
+    .smb-full-col {
+        grid-column: auto !important;
+    }
+
+    .intervals-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+
+    .modal-actions {
+        flex-direction: column-reverse !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
+    }
+
+    .modal-actions button {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 0.75rem !important;
+        font-size: 0.95rem !important;
+    }
+
+    .glass-input, .glass-select {
+        font-size: 16px !important; /* Prevents auto-zoom on mobile */
+    }
+}
+
+/* ==========================================================================
+   EXTRA SMALL MOBILE (max-width: 420px)
+   ========================================================================== */
+@media (max-width: 420px) {
+    .stats-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.6rem !important;
+    }
+
+    .page-title {
+        font-size: 1.2rem !important;
+    }
+
+    .mobile-nav-item span {
+        font-size: 0.62rem !important;
+    }
+
+    .glass-stat-card .stat-value {
+        font-size: 1.35rem !important;
+    }
 }
